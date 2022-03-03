@@ -1,0 +1,638 @@
+<?php
+
+//Verificación de permisos
+define('DURACION_SESION','43200'); //2 horas
+ini_set("session.cookie_lifetime",DURACION_SESION);
+ini_set("session.gc_maxlifetime",DURACION_SESION); 
+//ini_set("session.save_path","/tmp");
+session_cache_expire(DURACION_SESION);
+session_start();
+session_regenerate_id(true); 
+
+if (!isset($_SESSION['ROL'])){ header('location:logout.php'); }
+
+?>
+
+<!doctype html>
+<html class="no-js h-100" lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Facturas venta | ARFOR</title>
+    <meta name="description" content="Administrador de datos ARFOR">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/plugins/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0" href="styles/shards-dashboards.1.1.0.min.css">
+    <link rel="stylesheet" href="css/plugins/daterangepicker-master/daterangepicker.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- DataTables CSS -->
+    <link href="js/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <!-- DataTables Responsive CSS -->
+    <link href="js/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet">
+    <link href="js/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <!-- SELECT BOOTSTRAP -->
+    <link href="js/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+    <!-- DATE-PICKER-->
+    <link href="js/plugins/bootstrap-datepicker-master/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="js/plugins/bootstrap4-datetimepicker-master/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+	<link href="js/plugins/offline/themes/offline-language-spanish.css" rel="stylesheet">
+	<link href="js/plugins/offline/themes/offline-language-spanish-indicator.css" rel="stylesheet">
+	<!-- TOASTR-->
+	<link rel="stylesheet" type="text/css" href="js/plugins/toastr/toastr.min.css">
+
+  </head>
+  <body class="h-100">
+
+    <input type="hidden" id="usuario" alt="<?php echo $_SESSION["ID"]; ?>">
+
+    <div class="container-fluid">
+    	<div class="row">
+            <div class="col-sm-12 col-md-12"
+            	style="
+            		border: 1px solid #495057;
+    				margin: 5px;
+    				border-radius: 20px;
+    			">
+                <ul class="nav nav-tabs nav-justified hc-tabs" role="tablist" id="tab_facturas">
+                  	<li class="nav-item">
+                    	<a class="nav-link active" href="#TAB1" role="tab" data-toggle="tab">
+                      		<i class="material-icons">how_to_reg</i> Cliente<br /><small class="small_text">Datos del cliente</small>
+                    	</a>
+                  	</li>
+                  	<li class="nav-item">
+                    	<a class="nav-link" href="#TAB5" role="tab" data-toggle="tab">
+                      		<i class="material-icons">
+                        		<samp class="can_items" id="can_items">0</samp>$
+                        	</i> Total<br />
+                        	<small class="small_text">Items vendidos</small>
+                    	</a>
+                  	</li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                  	<div role="tabpanel" class="tab-pane fade show active" id="TAB1"><!-- INICIO TAB 1 CLIENTE-->
+                    	<div class="col-md-12">
+                      		<form class="offset-md-2 col-md-8 mt-5 mb-5">
+                         		<div class="form-group">
+                          			<div class="input-group mb-1">
+                            			<h4 style="margin-right: 10px;">Reporte</h4>
+                            			<input  type="checkbox"
+			                              class="slide-checkbox"
+			                              name="dian"
+			                              id="dian"
+			                              required checked>
+                            			<label for="dian" class="checkbox mb20"></label>
+                          			</div>
+                        		</div>
+                        		<div class="form-group form-row">
+                          			<div class="col-sm-12">
+                            			<div class="input-group">
+                              				<span class="input-group-addon w_addon">
+                              					<i class="fa fa-calendar"></i>&nbsp;Fecha
+                              				</span>
+                              				<input type="text" class="form-control input-lg" id="fac_ven_fec" placeholder="Fecha de factura">
+                            			</div>
+                          			</div>
+                        		</div>
+                        		<div class=" form-group form-row ">
+                        			<div class="col-sm-12" id="l_fac_obs">
+		                        		<select class="selectpicker" id="fac_cli_lis">
+                              				<option value="0">Selecciona un cliente</option>
+                            			</select>
+		                        	</div>
+                        		</div>
+                        		<div class="form-group form-row">
+		                        	<div class="col-sm-12" id="l_fac_obs">
+		                        		<select class="form-control" id="fac_ven_obs">
+		                              		<option value="0">Selecciona un producto..</option>
+		                          		</select>
+		                          		<input type="hidden" id="fac_ven_lpe" value="" name="">
+		                        	</div>
+		                      	</div>
+								<div class="form-group form-row">
+		                      		<div class="col-sm-12 mar_top_3px" style="padding-right:3px;">
+			                          	<div class="input-group" id="f_num_cel">
+			                            	<span class="input-group-addon w_addon"><i class="fa fa-plus-circle"></i>&nbsp;Valor/Unitario</span>
+			                            	<input type="number" class="form-control" id="fac_ven_vau" placeholder="Valor Unitario">
+			                          	</div>
+			                        </div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                      		<div class="col-sm-12 mar_top_3px" style="padding-right:3px;">
+			                          	<div class="input-group" id="f_num_cel">
+			                            	<span class="input-group-addon w_addon"><i class="fa fa-plus-circle"></i>&nbsp;Cantidad</span>
+			                            	<!--input type="hidden" class="form-control" id="fac_ven_vau"-->
+			                            	<input type="number" class="form-control" id="fac_ven_can" placeholder="Cantidad" value="1">
+			                          	</div>
+			                        </div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                      		<div class="col-sm-12 mar_top_3px" style="padding-left:3px;">
+		                          		<div class="input-group" id="f_num_cel">
+		                            		<span class="input-group-addon w_addon"><i class="fa fa-percent"></i>&nbsp; Descuento</span>
+		                            		<input type="number" class="form-control" id="fac_ven_des" placeholder="Porcentaje de Descuento" value="0">
+		                          		</div>
+		                        	</div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                      		<div class="col-sm-12 mar_top_3px" style="padding-left:3px;">
+		                          		<div class="input-group" id="f_num_cel">
+		                            		<span class="input-group-addon w_addon"><i class="fa fa-usd"></i>&nbsp; Descuento</span>
+		                            		<input type="number" class="form-control input-lg" id="fac_ven_dev" placeholder="Valor Descuento" value="0">
+		                          		</div>
+		                        	</div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                      		<div class="col-sm-12 mar_top_3px" style="padding-right:3px;">
+		                          		<div class="input-group" id="f_num_cel">
+		                            		<span class="input-group-addon w_addon"><i class="fa fa-usd"></i>&nbsp;Impuesto</span>
+		                            		<select class="form-control" id="fac_ven_imp"></select>
+                                    <input type="hidden" id="fac_ven_cos" placeholder="Costo unitario">
+		                            		<input type="hidden" id="fac_ven_tim" placeholder="Total De Impuestos Pagados">
+		                            		<input type="hidden" id="fac_ven_bas" placeholder="Total Base Gravable">
+											<input type="hidden" id="fac_ven_cos" placeholder="Costo unitario">
+		                          		</div>
+		                        	</div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                      		<div class="col-sm-12 mar_top_3px" style="padding-right:3px;">
+		                          		<span class="an-big" id="val_otr_item">$ 0 COP</span>
+		                        	</div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                      		<div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                          		<a
+		                          			href="javascript:;"
+		                          			class="btn btn-success btn-lg btn-block"
+		                          			id="btn_otr_add"
+		                          			alt=""
+		                          			style="margin-right:5px;">
+		                          				<i class="fa fa-plus-circle"></i>&nbsp;Agregar Item
+		                          		</a>
+		                        	</div>
+		                      	</div>
+		                      	<div class="form-group form-row">
+		                        	<div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                          		<a
+		                          			href="javascript:;"
+		                          			class="btn btn-danger btn-lg btn-block"
+		                          			data-toggle="modal"
+                            				data-target="#loteBajaModal"
+		                          			alt=""
+		                          			style="margin-right:5px;">
+		                          				<i class="fa fa-plus-circle"></i>&nbsp;Agregar Baja
+		                          		</a>
+		                        	</div>
+		                      	</div>
+                      		</form>
+                    	</div>
+                  	</div>
+	                <div role="tabpanel" class="tab-pane fade" id="TAB5"><!-- INICIO TAB 5 TOTAL-->
+	                    <div class="col-md-12" style="padding-left: 0px; padding-right: 0px;">
+	                      	<div style="display:block;max-height:350px;overflow-y:auto;">
+	                        	<table id="items_table" class="table table-striped table-sm" width="100%" >
+	                          		<thead style="font-size: 13px;">
+	                            		<tr>
+			                              	<th>Item</th>
+			                              	<th>Precio</th>
+			                              	<th>Cant.</th>
+			                              	<th>Total</th>
+			                              	<th>Opc.</th>
+	                            		</tr>
+	                          		</thead>
+	                          		<tbody id="items_table_html"></tbody>
+	                        	</table>
+	                      	</div>
+	                    </div>
+	                    <div class="col-md-12">
+	                      	<form class="col-md-12" id="fTabItinerario">
+	                      		<div class="form-group form-row">
+		                      		<div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                          		<a
+			                          		href="javascript:;"
+			                          		class="btn btn-success btn-lg btn-block"
+			                          		id="openVender"
+			                          		alt=""
+			                          		style="margin-right:5px;"
+			                          		data-toggle="modal"
+	                  						data-target="#pagoModal"
+		                          		><i class="fa fa-usd"></i>&nbsp;Pagar</a>
+		                        	</div>
+		                      	</div>
+	                      	</form>
+	                    </div>
+	                </div>
+	            </div>
+        	</div>
+        	<div class="col-sm-12 col-md-12"
+        		style="
+            		border: 1px solid #495057;
+    				margin: 5px;
+    				border-radius: 20px;
+    			">
+        		<form class="offset-md-2 col-md-8 mt-5 mb-5">
+        			MENÚ
+		       		<hr>
+		            <div class="form-group form-row">
+		                <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a href="javascript:;" class="btn btn-warning btn-lg btn-block" id="facturas" alt="" style="margin-right:5px;" data-toggle="modal" data-target="#facturasModal">
+		                    	<i class="fa fa-list"></i>&nbsp;Facturas
+		                    </a>
+		                </div>
+		            </div>
+		            <div class="form-group form-row">
+		                <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a href="javascript:;" class="btn btn-success btn-lg btn-block" id="abonos" alt="" style="margin-right:5px;" data-toggle="modal" data-target="#AddPagoModal">
+		                    	<i class="fa fa-plus-circle"></i>&nbsp;Pagos
+		                    </a>
+		                </div>
+		            </div>
+					<div class="form-group form-row">
+		                <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a href="javascript:;" class="btn btn-danger btn-lg btn-block" id="gastos" alt="" style="margin-right:5px;" data-toggle="modal" data-target="#AddGastoModal">
+		                    	<i class="fa fa-usd"></i>&nbsp;Gastos
+		                    </a>
+		                </div>
+		            </div>
+		            <div class="form-group form-row">
+		                <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a href="javascript:;" class="btn btn-primary btn-lg btn-block" id="sync" alt="" style="margin-right:5px;">
+		                    	<i class="fa fa-refresh"></i>&nbsp;Sincronizar
+		                        <span class="badge badge-light" id="can_syncs">0</span>
+		                    </a>
+		                </div>
+		            </div>
+					<div class="form-group form-row">
+		                <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a href="javascript:;" class="btn btn-success btn-lg btn-block" id="log" alt="" style="margin-right:5px;">
+		                    	<i class="fa fa-bars"></i>&nbsp;Log
+		                    </a>
+		                </div>
+		            </div>
+                </form>
+        	</div>
+    	</div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
+    <script src="js/plugins/popper/popper.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+
+    <script src="js/plugins/bootstrap/bootstrap.min.js"></script>
+    <!-- Momentjs Plugin JavaScript -->
+    <script src="js/plugins/momentjs/moment.min.js"></script>
+    <script src="js/plugins/momentjs/locale/es.js"></script>
+    <!-- DataTables JavaScript -->
+    <script src="js/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="js/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="js/plugins/datatables/dataTables.responsive.min.js"></script>
+    <script src="js/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script src="js/plugins/datatables/buttons.bootstrap4.min.js"></script>
+    <script src="js/plugins/datatables/jszip.min.js"></script>
+    <script src="js/plugins/datatables/buttons.html5.min.js"></script>
+    <script src="js/plugins/datatables/buttons.print.min.js"></script>
+    <!--DATE RANGE PICKER-->
+    <script src="js/plugins/daterangepicker-master/daterangepicker.min.js"></script>
+    <script src="js/plugins/daterangepicker-master/daterangepicker-objects.js"></script>
+    <!-- SELECT BOOTSTRAP -->
+    <script src="js/plugins/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <!--DATE-PICKER-->
+    <script src="js/plugins/bootstrap-datepicker-master/js/bootstrap-datepicker.min.js"></script>
+    <script src="js/plugins/bootstrap-datepicker-master/locales/bootstrap-datepicker.es.min.js"></script>
+    <script src="js/plugins/bootstrap4-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/plugins/bootstrap3-typeahead/bootstrap3-typeahead.min.js"></script>
+	<script src="js/plugins/offline/offline.min.js"></script>
+	<script type="text/javascript" src="js/plugins/toastr/toastr.min.js"></script>
+    <script src="js/app/ingresos_pos.js?1.34.<?php echo rand(); ?>"></script>
+    <script language="JavaScript"> history.forward() </script>
+  </body>
+
+
+  <div class='notifications bottom-right'></div>
+
+    <!-- MODALS -->
+
+    <!-- PAGO MODAL -->
+    <div class="modal fade" id="pagoModal" tabindex="-1" role="dialog" aria-labelledby="pagoModal" aria-hidden="true">
+      	<div class="modal-dialog modal-lg" role="document">
+        	<div class="modal-content">
+          		<div class="modal-header">
+	            	<h5 class="modal-title">Pago</h5>
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            		<span aria-hidden="true">&times;</span>
+	            	</button>
+	          	</div>
+	          	<div class="modal-body">
+	               	<div class="row">
+	                    <div class="col-lg-6">
+	                        <form>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">TOTAL PAGO O ABONÓ EL CLIENTE</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="number" class="form-control form-control-lg" id="fac_ven_tot" placeholder="¿Cuanto pago el cliente?">
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">FORMA DE PAGO</label>
+	                            	<div class="col-sm-8">
+	                              		<select class="form-control form-control-lg" id="fac_ven_met" autocomplete="off">
+	                                		<option value="1">&nbsp;Efectivo</option>
+	                                		<option value="2">&nbsp;Consignación</option>
+	                                		<option value="3">&nbsp;Transacción Bancaria</option>
+	                                		<option value="4">&nbsp;Cheque</option>
+	                                		<option value="5">&nbsp;Tarjeta de Credito</option>
+	                                		<option value="7">&nbsp;Crédito</option>
+	                                		<option value="6">&nbsp;Otro</option>
+	                              		</select>
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">CATEGORÍA DE INGRESO</label>
+	                            	<div class="col-sm-8">
+	                              		<select class="form-control form-control-lg" id="fac_ven_cat" autocomplete="off">
+	                              		</select>
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">¿CON CUANTO PAGO EL CLIENTE?</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="number" class="form-control form-control-lg" id="fac_ven_tre" placeholder="¿Cuanto efectivo recibió para calcular las vueltas?">
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">CAMBIO A ENTREGAR()</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="number" class="form-control form-control-lg" id="fac_ven_cam" placeholder="Cambio a entregar">
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">COMENTARIO</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="text" class="form-control form-control-lg" placeholder="Comentario sobre el pago" id="fac_ven_obf" autocomplete="off">
+	                            	</div>
+	                          	</div>
+
+	                        </form>
+	                    </div>
+	                    <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a
+			                    href="javascript:;"
+			                    class="btn btn-primary btn-lg btn-block"
+			                    id="btn_save_factura"
+			                    alt=""
+			                    style="margin-right:5px;"
+		                    ><i class="fa fa-check"></i>&nbsp;FACTURAR</a>
+		                </div>
+	                </div>
+	          	</div><!-- Modal Body-->
+      		</div><!-- Modal Content-->
+    	</div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+    <!-- FACTURAS -->
+    <div class="modal fade" id="facturasModal" tabindex="-1" role="dialog" aria-labelledby="facturasModal" aria-hidden="true">
+      	<div class="modal-dialog modal-lg" role="document">
+        	<div class="modal-content">
+          		<div class="modal-header">
+	            	<h5 class="modal-title">Facturas</h5>
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            		<span aria-hidden="true">&times;</span>
+	            	</button>
+	          	</div>
+	          	<div class="modal-body">
+	               	<div class="row">
+	                    <div class="col-lg-12">
+	                        <table id="facturas_table" class="table table-striped table-sm" width="100%" >
+	                          	<thead style="font-size: 13px;">
+	                            	<tr>
+			                            <th>Número</th>
+			                            <th>Cliente</th>
+			                            <th>Opción</th>
+	                            		</tr>
+	                          		</thead>
+	                          		<tbody id="facturas_table_html"></tbody>
+	                        </table>
+	                    </div>
+	                </div>
+	          	</div><!-- Modal Body-->
+      		</div><!-- Modal Content-->
+    	</div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+    <!-- AGREGAR PAGO MODAL -->
+    <div class="modal fade" id="AddPagoModal" tabindex="-1" role="dialog" aria-hidden="true">
+      	<div class="modal-dialog modal-lg" role="document">
+        	<div class="modal-content">
+          		<div class="modal-header">
+	            	<h5 class="modal-title">Agregar Pago</h5>
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            		<span aria-hidden="true">&times;</span>
+	            	</button>
+	          	</div>
+	          	<div class="modal-body">
+	               	<div class="row">
+	                    <div class="col-lg-6">
+	                        <form>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">FACTURAS POR COBRAR</label>
+	                            	<div class="col-sm-8">
+	                              		<select class="form-control form-control-lg" id="add_pago_fac" autocomplete="off">
+	                                		<option value="0">&nbsp;Seleccione una factura</option>
+	                              		</select>
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">CANTIDAD ABONADA</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="number" class="form-control form-control-lg" id="add_pago_abo" placeholder="Cuanto abonó el cliente a la factura">
+	                            	</div>
+	                          	</div>
+	                         	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">FORMA DE PAGO</label>
+	                            	<div class="col-sm-8">
+	                              		<select class="form-control form-control-lg" id="add_pago_met" autocomplete="off">
+	                                		<option value="1">&nbsp;Efectivo</option>
+	                                		<option value="2">&nbsp;Consignación</option>
+	                                		<option value="3">&nbsp;Transacción Bancaria</option>
+	                                		<option value="4">&nbsp;Cheque</option>
+	                                		<option value="5">&nbsp;Tarjeta de Credito</option>
+	                                		<option value="7">&nbsp;Crédito</option>
+	                                		<option value="6">&nbsp;Otro</option>
+	                              		</select>
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">CATEGORÍA DE INGRESO</label>
+	                            	<div class="col-sm-8">
+	                              		<select class="form-control form-control-lg" id="add_pago_cat" autocomplete="off">
+	                              		</select>
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">COMENTARIO</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="text" class="form-control form-control-lg" placeholder="Comentario sobre el abono" id="add_pago_obs" autocomplete="off">
+	                            	</div>
+	                          	</div>
+
+	                        </form>
+	                    </div>
+	                    <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a
+			                    href="javascript:;"
+			                    class="btn btn-success btn-lg btn-block"
+			                    id="btn_add_abono"
+			                    alt=""
+			                    style="margin-right:5px;"
+		                    ><i class="fa fa-usd"></i>&nbsp;ABONAR</a>
+		                </div>
+	                </div>
+	          	</div><!-- Modal Body-->
+      		</div><!-- Modal Content-->
+    	</div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+	<!-- AGREGAR GASTO MODAL -->
+    <div class="modal fade" id="AddGastoModal" tabindex="-1" role="dialog" aria-hidden="true">
+      	<div class="modal-dialog modal-lg" role="document">
+        	<div class="modal-content">
+          		<div class="modal-header">
+	            	<h5 class="modal-title">Agregar Gasto</h5>
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            		<span aria-hidden="true">&times;</span>
+	            	</button>
+	          	</div>
+	          	<div class="modal-body">
+	               	<div class="row">
+	                    <div class="col-lg-6">
+	                        <form>
+	                          	
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">CANTIDAD GASTADA</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="number" class="form-control form-control-lg" id="add_gasto" placeholder="Cuanto gastó">
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">CATEGORÍA DE GASTO</label>
+	                            	<div class="col-sm-8">
+	                              		<select class="form-control form-control-lg" id="add_gasto_cat" autocomplete="off">
+	                              		</select>
+	                            	</div>
+	                          	</div>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">COMENTARIO</label>
+	                            	<div class="col-sm-8">
+	                              		<input type="text" class="form-control form-control-lg" placeholder="Comentario sobre el gasto" id="add_gasto_obs" autocomplete="off">
+	                            	</div>
+	                          	</div>
+
+	                        </form>
+	                    </div>
+	                    <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a
+			                    href="javascript:;"
+			                    class="btn btn-danger btn-lg btn-block"
+			                    id="btn_add_gasto"
+			                    alt=""
+			                    style="margin-right:5px;"
+		                    ><i class="fa fa-usd"></i>&nbsp;REGISTRAR</a>
+		                </div>
+	                </div>
+	          	</div><!-- Modal Body-->
+      		</div><!-- Modal Content-->
+    	</div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+    <!-- AGREGAR PAGO MODAL -->
+    <div class="modal fade" id="LoadingModal" tabindex="-1" role="dialog" aria-hidden="true">
+      	<div class="modal-dialog modal-lg" role="document">
+        	<div class="modal-content">
+          		<div class="modal-header">
+	            	<h5 class="modal-title">Cargango Información</h5>
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            		<span aria-hidden="true">&times;</span>
+	            	</button>
+	          	</div>
+	          	<div class="modal-body">
+	               	<div class="row">
+	                    <div class="col-lg-12">
+	                        <p id="data_sync"></p>
+	                    </div>
+	                </div>
+	          	</div><!-- Modal Body-->
+      		</div><!-- Modal Content-->
+    	</div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+    <!-- LOTE MODAL -->
+    <div class="modal fade" id="loteBajaModal" tabindex="-1" role="dialog" aria-labelledby="loteBajaModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Lote</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <div class="row">
+                      <div class="col-lg-12">
+                          <form>
+                              <div class="form-group form-row">
+                                <label class="col-sm-4 control-label">¿Cual es el lote del ítem?</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control form-control-lg" id="lote_item" placeholder="Lote item">
+                                </div>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div><!-- Modal Body-->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn_otr_baj">Agregar Baja</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+            </div>
+          </div><!-- Modal Content-->
+      </div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+
+    <div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="dataModal" aria-hidden="true">
+      	<div class="modal-dialog modal-lg" role="document">
+        	<div class="modal-content">
+          		<div class="modal-header">
+	            	<h5 class="modal-title">Data</h5>
+	            	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	            		<span aria-hidden="true">&times;</span>
+	            	</button>
+	          	</div>
+	          	<div class="modal-body">
+	               	<div class="row">
+	                    <div class="col-lg-6">
+	                        <form>
+	                          	<div class="form-group form-row">
+	                            	<label class="col-sm-4 control-label">ARRAY DATA</label>
+	                            	<div class="col-sm-8">
+	                            		<textarea class="form-control form-control-lg" placeholder="Comentario sobre el pago" id="data_txt" autocomplete="off" rows="7">
+	                            		</textarea>
+	                            	</div>
+	                          	</div>
+
+	                        </form>
+	                    </div>
+	                </div>
+	          	</div><!-- Modal Body-->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success" id="copy_backup">Guardar</button>
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+            	</div>
+      		</div><!-- Modal Content-->
+    	</div><!-- Modal Dialog-->
+    </div><!-- Modal -->
+
+
+</html>

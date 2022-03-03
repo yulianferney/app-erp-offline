@@ -1,0 +1,7 @@
+{
+  "name": "arfor",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
