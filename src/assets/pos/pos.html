@@ -1,18 +1,3 @@
-<?php
-
-//Verificación de permisos
-define('DURACION_SESION','43200'); //2 horas
-ini_set("session.cookie_lifetime",DURACION_SESION);
-ini_set("session.gc_maxlifetime",DURACION_SESION); 
-//ini_set("session.save_path","/tmp");
-session_cache_expire(DURACION_SESION);
-session_start();
-session_regenerate_id(true); 
-
-if (!isset($_SESSION['ROL'])){ header('location:logout.php'); }
-
-?>
-
 <!doctype html>
 <html class="no-js h-100" lang="es">
   <head>
@@ -21,31 +6,26 @@ if (!isset($_SESSION['ROL'])){ header('location:logout.php'); }
     <title>Facturas venta | ARFOR</title>
     <meta name="description" content="Administrador de datos ARFOR">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="css/plugins/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0" href="styles/shards-dashboards.1.1.0.min.css">
-    <link rel="stylesheet" href="css/plugins/daterangepicker-master/daterangepicker.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <!-- DataTables CSS -->
-    <link href="js/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-    <!-- DataTables Responsive CSS -->
-    <link href="js/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet">
-    <link href="js/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet">
-    <!-- SELECT BOOTSTRAP -->
-    <link href="js/plugins/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
-    <!-- DATE-PICKER-->
-    <link href="js/plugins/bootstrap-datepicker-master/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <link href="js/plugins/bootstrap4-datetimepicker-master/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-	<link href="js/plugins/offline/themes/offline-language-spanish.css" rel="stylesheet">
-	<link href="js/plugins/offline/themes/offline-language-spanish-indicator.css" rel="stylesheet">
-	<!-- TOASTR-->
-	<link rel="stylesheet" type="text/css" href="js/plugins/toastr/toastr.min.css">
+    <link href="assets/fontawesome/css/all.css" rel="stylesheet">
+    <link href="assets/materialicons/font.css" rel="stylesheet">
+    <link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet" >
+    <link href="assets/styles/shards-dashboards.1.2.0.min.css" rel="stylesheet" id="main-stylesheet" data-version="1.1.0" >
+    <link href="assets/plugins/daterangepicker.min.css" rel="stylesheet" >
+    <link href="assets/styles/style.css" rel="stylesheet">
+    <link href="assets/plugins/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="assets/plugins/responsive.bootstrap4.min.css" rel="stylesheet">
+    <link href="assets/plugins/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="assets/plugins/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
+    <link href="assets/plugins/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="assets/plugins/bootstrap-datetimepicker.min.css" rel="stylesheet">
+	<link href="assets/plugins/offline-language-spanish.css" rel="stylesheet">
+	<link href="assets/plugins/offline-language-spanish-indicator.css" rel="stylesheet">
+	<link href="assets/plugins/toastr.min.css" rel="stylesheet" type="text/css">
 
   </head>
   <body class="h-100">
 
-    <input type="hidden" id="usuario" alt="<?php echo $_SESSION["ID"]; ?>">
+    <input type="hidden" id="usuario" alt="">
 
     <div class="container-fluid">
     	<div class="row">
@@ -271,43 +251,43 @@ if (!isset($_SESSION['ROL'])){ header('location:logout.php'); }
 		                    </a>
 		                </div>
 		            </div>
+					<div class="form-group form-row">
+		                <div class="col-sm-6 mar_top_3px" style="padding-right:3px;">
+		                    <a href="javascript:;" class="btn btn-warning btn-lg btn-block" id="signout" alt="" style="margin-right:5px;" data-toggle="modal" data-target="#AddGastoModal">
+		                    	<i class="fa fa-arrow-right-from-bracket"></i>&nbsp;Cerrar sesión
+		                    </a>
+		                </div>
+		            </div>
+
                 </form>
         	</div>
     	</div>
     </div>
 
     <!-- jQuery -->
-    <script src="js/plugins/jquery/jquery-3.3.1.min.js"></script>
-    <script src="js/plugins/popper/popper.min.js"></script>
-    <!-- Bootstrap Core JavaScript -->
-
-    <script src="js/plugins/bootstrap/bootstrap.min.js"></script>
-    <!-- Momentjs Plugin JavaScript -->
-    <script src="js/plugins/momentjs/moment.min.js"></script>
-    <script src="js/plugins/momentjs/locale/es.js"></script>
-    <!-- DataTables JavaScript -->
-    <script src="js/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="js/plugins/datatables/dataTables.bootstrap4.min.js"></script>
-    <script src="js/plugins/datatables/dataTables.responsive.min.js"></script>
-    <script src="js/plugins/datatables/dataTables.buttons.min.js"></script>
-    <script src="js/plugins/datatables/buttons.bootstrap4.min.js"></script>
-    <script src="js/plugins/datatables/jszip.min.js"></script>
-    <script src="js/plugins/datatables/buttons.html5.min.js"></script>
-    <script src="js/plugins/datatables/buttons.print.min.js"></script>
-    <!--DATE RANGE PICKER-->
-    <script src="js/plugins/daterangepicker-master/daterangepicker.min.js"></script>
-    <script src="js/plugins/daterangepicker-master/daterangepicker-objects.js"></script>
-    <!-- SELECT BOOTSTRAP -->
-    <script src="js/plugins/bootstrap-select/js/bootstrap-select.min.js"></script>
-    <!--DATE-PICKER-->
-    <script src="js/plugins/bootstrap-datepicker-master/js/bootstrap-datepicker.min.js"></script>
-    <script src="js/plugins/bootstrap-datepicker-master/locales/bootstrap-datepicker.es.min.js"></script>
-    <script src="js/plugins/bootstrap4-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
-    <script src="js/plugins/bootstrap3-typeahead/bootstrap3-typeahead.min.js"></script>
-	<script src="js/plugins/offline/offline.min.js"></script>
-	<script type="text/javascript" src="js/plugins/toastr/toastr.min.js"></script>
-    <script src="js/app/ingresos_pos.js?1.34.<?php echo rand(); ?>"></script>
-    <script language="JavaScript"> history.forward() </script>
+	<script src="assets/plugins/jquery-3.3.1.min.js"></script>
+    <script src="assets/plugins/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap.min.js"></script>
+    <script src="assets/plugins/moment.min.js"></script>
+    <script src="assets/plugins/moment-lang-es.js"></script>
+    <script src="assets/plugins/jquery.dataTables.min.js"></script>
+    <script src="assets/plugins/dataTables.bootstrap4.min.js"></script>
+    <script src="assets/plugins/dataTables.responsive.min.js"></script>
+    <script src="assets/plugins/dataTables.buttons.min.js"></script>
+    <script src="assets/plugins/buttons.bootstrap4.min.js"></script>
+    <script src="assets/plugins/jszip.min.js"></script>
+    <script src="assets/plugins/buttons.html5.min.js"></script>
+    <script src="assets/plugins/buttons.print.min.js"></script>
+    <script src="assets/plugins/daterangepicker.min.js"></script>
+    <script src="assets/plugins/daterangepicker-objects.js"></script>
+    <script src="assets/plugins/bootstrap-select.min.js"></script>
+    <script src="assets/plugins/bootstrap-datepicker.min.js"></script>
+    <script src="assets/plugins/bootstrap-datepicker.es.min.js"></script>
+    <script src="assets/plugins/bootstrap-datetimepicker.min.js"></script>
+    <script src="assets/plugins/bootstrap3-typeahead.min.js"></script>
+	<script src="assets/plugins/offline.min.js"></script>
+	<script src="assets/plugins/toastr.min.js" type="text/javascript"></script>
+    <script src="assets/js/ingresos_pos.js"></script>
   </body>
 
 

@@ -9,6 +9,17 @@
 (function ($) {
   $(document).ready(function () {
 
+    //Config 
+    const URL_SERVER = 'https://productosalimenticiosarfor.com/vendedor/';
+
+    //COMPROBAR SESIÓN
+    var _ID_CUENTA = localStorage.getItem("IDUSUARIO");
+    if(_ID_CUENTA!=null && _ID_CUENTA!='null' && _ID_CUENTA!=undefined){
+      //Redireccionar si existe la cuenta
+      window.location.href = "pos.html";
+    }
+
+
     //Verificar usuario
     $("#iniciar_sesion").click(function(){ validar_usuario(); });
 
@@ -30,14 +41,10 @@
       //Procesando solicitud
       await send_(type_, destino_, data_).then( 
         (resp)=>{ 
-        	console.log(resp);
-          $("#iniciar_sesion").html("Iniciar sesión");
           if (resp.length > 0) { 
-            switch(resp[0]["ROL"]){
-              case 0: window.location.href = "index.php"; break;
-              case 1: window.location.href = "../app/index.php"; break;
-              case 2: window.location.href = "index.php"; break;
-            }
+            localStorage.setItem("IDUSUARIO", resp[0]["ID"].toString() );
+            $("#iniciar_sesion").html("Iniciar sesión");
+            setTimeout(()=>{ window.location.href = "pos.html"; }, 1000);
           }
           else{ 
             message_(
@@ -70,7 +77,7 @@
           timeout:60000,
           dataType: "html",
           contentType: "application/x-www-form-urlencoded",
-          url:destino_,
+          url: URL_SERVER + destino_,
           data:data_,
           beforeSend:function(){},
           success:function (datos){ return resolve( JSON.parse(datos) ); },

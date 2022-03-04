@@ -1,14 +1,12 @@
 #container {
-  text-align: center;
+  width:100%;
+  height:100%;
   position: absolute;
   left: 0;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  display:block;
+  position: absolute;
 }
-
-
-
 
 ion-content div.scroll{
   height: 90%; 
@@ -20,4 +18,6 @@ ion-content div.scroll{
   background-color: transparent;
   padding: 0px;
   margin: 0px;
+  display: block;
+  position: absolute
 }
